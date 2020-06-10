@@ -51,8 +51,10 @@ def make_triplet(subject_list, relation_list, object_list):
         subject = subject_list[0]
         relation = relation_list[0]
         s_body = subject[0]
+        s_affix = subject[1]
         r_body = relation[0]
-        triple_set.append((s_body, r_body, False))
+        triple_set.append((s_body, s_affix, r_body))
+        # triple_set.append((s_body, r_body, False))
         graph.append(triple_set)
 
     elif len(subject_list) == 1 and len(relation_list) == 1 and len(object_list) == 1:
@@ -60,15 +62,16 @@ def make_triplet(subject_list, relation_list, object_list):
         relation = relation_list[0]
         object = object_list[0]
         s_body = subject[0]
+        s_affix = subject[1]
         r_body = relation[0]
         o_body = object[0]
         o_affix = object[1]
 
-        if r_body[0][1] == 'VCP':
-            triple_set.append((s_body, r_body, o_body))
-        else:
-            triple_set.append((s_body, r_body, False))
-            triple_set.append((r_body, o_affix, o_body))
+        # if r_body[0][1] == 'VCP':
+        #     triple_set.append((s_body, r_body, o_body))
+        # else:
+        triple_set.append((s_body, s_affix, r_body))
+        triple_set.append((r_body, o_affix, o_body))
         graph.append(triple_set)
 
     elif len(subject_list) > 1 and len(object_list) > 1 and len(relation_list) == 1:
@@ -94,10 +97,11 @@ def make_triplet(subject_list, relation_list, object_list):
                         o_position = object[2]
                         o_affix = object[1]
                         o_body = object[0]
-                        if s_position < o_position and o_position < flag_position:
+                        if s_position < o_position < flag_position:
                             if main_exist is False:
-                                if o_affix is not False and o_affix[0][1] == 'JKO' or r_body[0][1] == 'VCP':
-                                    triple_set.append((s_body, r_body, o_body))
+                                # if o_affix is not False and o_affix[0][1] == 'JKO' or r_body[0][1] == 'VCP':
+                                triple_set.append((s_body, s_affix, r_body))
+                                triple_set.append((r_body, o_affix, o_body))
                                 # else:
                                 #     triple_set.append((s_body, r_body, False))
                                 #     triple_set.append((r_body, o_affix, o_body))
@@ -137,7 +141,8 @@ def make_triplet(subject_list, relation_list, object_list):
                         o_body = object[0]
                         if o_position < r_position and o_position > flag_position:
                             if main_exist is False:
-                                triple_set.append((s_body, r_body, o_body))
+                                triple_set.append((s_body, s_affix, r_body))
+                                triple_set.append((r_body, o_affix, o_body))
                                 marked_object_position.append(object[2])
                                 # print((subject, relation, object))
                                 main_exist = True
@@ -170,11 +175,12 @@ def make_triplet(subject_list, relation_list, object_list):
                         o_body = object[0]
                         if o_position < r_position and o_position > flag_position:
                             if main_exist is False:
-                                if o_affix is not False and o_affix[0][1] == 'JKO' or r_body[0][1] == 'VCP':
-                                    triple_set.append((s_body, r_body, o_body))
-                                else:
-                                    triple_set.append((s_body, r_body, False))
-                                    triple_set.append((r_body, o_affix, o_body))
+                                # if o_affix is not False and o_affix[0][1] == 'JKO' or r_body[0][1] == 'VCP':
+                                triple_set.append((s_body, s_affix, r_body))
+                                triple_set.append((r_body, o_affix, o_body))
+                                # else:
+                                #     triple_set.append((s_body, s_affix, r_body))
+                                #     triple_set.append((r_body, o_affix, o_body))
                                 marked_object_position.append(object[2])
                                 # print((subject, relation, object))
                                 main_exist = True
@@ -202,7 +208,7 @@ def print_graph(graph):
     print("")
 
 
-sentence = u'민간 기업 스페이스X가 30일 미국 항공우주국 소속 우주 비행사 2명을 유인 우주선 크루 드래건으로 우주로 쏘아 올렸다.'
+sentence = u'그는 대다수의 작품을 1920년대 중반부터 1950년대 중반 사이에 발표하였고, 1954년에 노벨 문학상을 수상하였다.'
 chunks = c.get_chunk_tree(sentence)
 chunks.pprint()
 subject_list, relation_list, object_list, exception_list = get_lists(chunks)

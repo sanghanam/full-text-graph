@@ -2,12 +2,10 @@ from src import processor as p
 # from src import kbox_loader as kl
 from src import rest_call as rc
 import networkx as nx
-# import matplotlib as mpl
-# import matplotlib.pyplot as plt
+import matplotlib as mpl
+import matplotlib.pyplot as plt
 
-def get_full_text_graph(text):
-    do_Frame = True
-    do_L2K = True
+def get_full_text_graph(text, do_Frame, do_L2K):
 
     ## KBox
     # kbox = kl.load()
@@ -26,8 +24,7 @@ def get_full_text_graph(text):
     if do_Frame:
         print("======= FrameNet Graph =======")
         frame = rc.call_frame(text)
-        frdf = frame["frdf"]
-        print(frdf)
+        print(frame)
         print("==============================")
         print()
 
@@ -155,20 +152,14 @@ def get_full_text_graph(text):
     if do_Frame:
         frame_G = nx.DiGraph()
 
-        frdf = frame["frdf"]
+        frdf = frame
         frame_index_set = []
         for rdf in frdf:
             f_index = rdf[0].replace("frame:", "").replace("-input_sent", "")
             f_arg = rdf[1].replace("frame:", "")
             f_arg = f_arg[f_arg.find("-") + 1:len(f_arg)]
             lu = rdf[2].replace("\"", "")
-            lu = lu[0:lu.find("^^")]
-
-            # temporarily
-            # lu = lu.replace("는", "")
-            # lu = lu.replace("에서", "")
-            # lu = lu.replace("에", "")
-            # lu = lu.replace("로", "")
+            # lu = lu[0:lu.find("^^")]
 
             uri = entity_dict.get(lu, lu)
 
@@ -213,8 +204,6 @@ def get_full_text_graph(text):
     print(surface_G.nodes(data=True))
     print(surface_G.edges(data=True))
 
-    print(surface_G)
-
     # # plt.rc('font', family='NanumBarunGothicOTF')
     #
     # pos = nx.layout.spring_layout(surface_G)
@@ -250,9 +239,9 @@ def get_full_text_graph(text):
     # print()
 
 
-text = "민간 기업 스페이스X가 30일 미국 항공우주국 소속 우주 비행사 2명을 유인 우주선 크루 드래건으로 우주로 쏘아 올렸다."
+text = "한지운은 9회초 타석에 들어섰으나 송승준에게 사구를 맞았다."
 # text = "국가보안위원회는 1954년부터 1991년까지 존속했던 소련의 정보 기관이다."
 # text = "근우회는 1927년에 조직된 한국의 여성 단체이다."
 # text = "쿠바에서 몇년간 생활을 했고, 말년에는 피델 카스트로와도 알고 지내는 사이였기 때문에 관광업의 비중이 높아진 뒤의 쿠바에서는 허밍웨이를 체 게바라와 함께 관광상품으로 써먹고 있다."
 
-get_full_text_graph(text)
+get_full_text_graph(text, True, False)
