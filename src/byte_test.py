@@ -2,7 +2,6 @@ text = "들어섰으나 송승준에게 사구를 맞았다."
 lemma_list = ["들어서", "었", "으나", "송승준", "에게", "사구", "를", "맞", "았", "다", "."]
 position_list = [0, 6, 9, 16, 25, 32, 38, 42, 45, 48, 51]
 
-
 def get_character_position_list(lemma_list, position_list):
     character_list = []
     byte_idx = -1

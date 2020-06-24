@@ -208,16 +208,16 @@ def print_graph(graph):
     print("")
 
 
-sentence = u'그는 대다수의 작품을 1920년대 중반부터 1950년대 중반 사이에 발표하였고, 1954년에 노벨 문학상을 수상하였다.'
-chunks = c.get_chunk_tree(sentence)
-chunks.pprint()
-subject_list, relation_list, object_list, exception_list = get_lists(chunks)
-
-print("======== chunk to list (distributing roles) ======= ")
-print("sbj_list:", subject_list)
-print("rel_list:", relation_list)
-print("obj_list:", object_list)
-print("exp_list:", exception_list)
-
-graph = make_triplet(subject_list, relation_list, object_list)
-print_graph(graph)
+# sentence = u'그는 대다수의 작품을 1920년대 중반부터 1950년대 중반 사이에 발표하였고, 1954년에 노벨 문학상을 수상하였다.'
+# chunks = c.get_chunk_tree(sentence)
+# chunks.pprint()
+# subject_list, relation_list, object_list, exception_list = get_lists(chunks)
+#
+# print("======== chunk to list (distributing roles) ======= ")
+# print("sbj_list:", subject_list)
+# print("rel_list:", relation_list)
+# print("obj_list:", object_list)
+# print("exp_list:", exception_list)
+#
+# graph = make_triplet(subject_list, relation_list, object_list)
+# print_graph(graph)

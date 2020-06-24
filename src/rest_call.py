@@ -15,6 +15,18 @@ def call_frame(text):
       return response.json()
 
 
+def call_surface(text):
+    targetURL = "http://wisekb.kaist.ac.kr:47361/surface-parser"
+    headers = {'Content-Type': 'application/json; charset=utf-8'}
+    requestJson = {
+        "text": text
+    }
+    response = requests.post(targetURL, data=json.dumps(requestJson), headers=headers)
+    print("[SURFACE responseCode] " + str(response.status_code))
+    # print(response.json())
+    return response.json()
+
+
 def call_l2k(text):
       targetURL = "http://wisekb.kaist.ac.kr:2451/open-api"
       headers = {'Content-Type': 'application/json; charset=utf-8'}

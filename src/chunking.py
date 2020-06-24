@@ -74,7 +74,7 @@ def get_pos_list(json_data):
             elif i == len(temp_list) - 1:
                 close = temp[3]
             morp_with_position_list.remove(temp)
-        morp_with_position_list.insert(begin - idx, (ne[0], "NNP", str(open), str(close)))
+        morp_with_position_list.insert(begin - idx, (ne[0].replace(" ", "_"), "NNP", str(open), str(close)))
         idx = idx + int(end) - int(begin)
 
     return morp_with_position_list

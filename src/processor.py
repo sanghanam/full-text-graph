@@ -9,7 +9,6 @@ def clean_text(text):
     # cleaned = re.sub(r'\([^)]*\)', '', cleaned)
     return cleaned
 
-
 def dump_processor():
     wr = open('../data/surface_graph_log.txt', 'w', encoding='utf-8')
     f = open('../data/merged_abstract.tsv', 'r', encoding='utf-8')
