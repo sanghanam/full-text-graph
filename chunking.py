@@ -1,6 +1,7 @@
 # import konlpy
 import nltk
-from src import rest_call as rc
+import rest_call as rc
+
 
 def get_character_position_list(lemma_list, position_list):
     character_list = []

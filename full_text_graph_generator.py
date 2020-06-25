@@ -1,11 +1,7 @@
 from nltk import Tree
 
-from src import processor as p
 # from src import kbox_loader as kl
-from src import rest_call as rc
-import networkx as nx
-import matplotlib as mpl
-import matplotlib.pyplot as plt
+import rest_call as rc
 import json
 
 
@@ -20,9 +16,88 @@ def node_in_list(target, nodes):
     return False, -1
 
 
+def get_node_id(t_open, t_close, nodes):
+    node_id_list = []
+    temp_list = []
+    is_in = False
+    for node in nodes:
+        s_open = node["s_open"]
+        s_close = node["s_close"]
+        if int(s_open) == int(t_open) and int(s_close) == int(t_close):
+            node_id_list.append(node["id"])
+            return node_id_list
+        elif int(s_open) == int(t_open) and int(s_close) < int(t_close):
+            node_id_list.append(node["id"])
+            is_in = True
+        elif is_in and int(s_close) == int(t_close):
+            node_id_list.append(node["id"])
+            # node_id_list.extend(temp_list)
+            is_in = False
+            return node_id_list
+        elif is_in and int(s_open) > int(t_open) and int(s_close) < int(t_close):
+            node_id_list.append(node["id"])
+    return node_id_list
+
+
+def get_node_list_from_id_list(id_list, nodes):
+    node_list = []
+    for id in id_list:
+        for node in nodes:
+            if int(id) == int(node["id"]):
+                node_list.append(node)
+    return node_list
+
+
+def add_sem_to_nodes(id_list, nodes, sem):
+    for id in id_list:
+        for node in nodes:
+            if int(id) == int(node["id"]):
+                node["sem"] = sem
+    return nodes
+
+
+def add_sem_to_edges(head_list, tail_list, edges, frame_index, sem):
+    print(head_list, tail_list, edges, sem)
+    for edge in edges:
+        edge_head_list = edge["head"]
+        edge_tail_list = edge["tail"]
+        if head_list == edge_head_list and tail_list == edge_tail_list:
+            edge["sem"] = frame_index + "." + sem
+            return
+        if head_list == edge_tail_list and tail_list == edge_head_list:
+            edge["sem"] = frame_index + "." + sem
+            edge["head"] = head_list
+            edge["tail"] = tail_list
+            return
+        if set(head_list).issubset(set(edge_head_list)) and set(tail_list).issubset(set(edge_tail_list)):
+            edge["sem"] = frame_index + "." + sem
+            edge["head"] = head_list
+            edge["tail"] = tail_list
+            return
+        if set(head_list).issubset(set(edge_tail_list)) and set(tail_list).issubset(set(edge_head_list)):
+            edge["sem"] = frame_index + "." + sem
+            edge["head"] = head_list
+            edge["tail"] = tail_list
+            return
+
+    edge = {}
+    edge["lex"] = "NIL"
+    edge["sem"] = frame_index + "." + sem
+    edge["pos"] = "NIL"
+    edge["s_open"] = -1
+    edge["s_close"] = -1
+    edge["head"] = head_list
+    edge["tail"] = tail_list
+    edges.append(edge)
+
+
+
+
+
 def get_full_text_graph(text, do_Frame, do_L2K):
 
-    result = {}
+    surface_graph = {}
+    surface_frame_graph = {}
 
     ## KBox
     # kbox = kl.load()
@@ -131,22 +206,47 @@ def get_full_text_graph(text, do_Frame, do_L2K):
         edge["tail"] = tail_list
         edges.append(edge)
 
-    result["docID"] = 0
-    result["senID"] = 0
-    result["vertex"] = nodes
-    result["edge"] = edges
+    surface_graph["docID"] = 0
+    surface_graph["senID"] = 0
+    surface_graph["vertex"] = nodes
+    surface_graph["edge"] = edges
 
-    print(json.dumps(result, ensure_ascii=False))
+    print(json.dumps(surface_graph, ensure_ascii=False))
 
-    return result
+    ## FrameNet
+    if do_Frame:
+        print("======= FrameNet Graph =======")
+        frames = rc.call_frame(text)
+        for frame in frames:
+            lu = frame["lu"]
+            frame_index = frame["frame"]
+            denotations = frame["denotations"]
+            head_list = []
+            for denotation in denotations:
+                s_open = denotation["span"]["begin"]
+                s_close = denotation["span"]["end"]
+                role = denotation["role"] # TARGET or ARGUMENT
+                obj = denotation["obj"]
+                if role == "TARGET":
+                    # add sem to vertex
+                    head_list = get_node_id(s_open, s_close, nodes)
+                    if len(head_list) > 0:
+                        add_sem_to_nodes(head_list, nodes, obj)
+                elif role == "ARGUMENT":
+                    # add sem to edge
+                    tail_list = get_node_id(s_open, s_close, nodes)
+                    if len(tail_list) > 0:
+                        add_sem_to_edges(head_list, tail_list, edges, frame_index, obj)
 
-    # ## FrameNet
-    # if do_Frame:
-    #     print("======= FrameNet Graph =======")
-    #     frame = rc.call_frame(text)
-    #     print(frame)
-    #     print("==============================")
-    #     print()
+    surface_frame_graph["docID"] = 0
+    surface_frame_graph["senID"] = 0
+    surface_frame_graph["vertex"] = nodes
+    surface_frame_graph["edge"] = edges
+
+    print(json.dumps(surface_frame_graph, ensure_ascii=False))
+
+    return surface_graph, surface_frame_graph
+
     #
     # ## L2K
     # entity_dict = {}
@@ -365,4 +465,4 @@ text = "민간 기업 스페이스X가 30일 미국 항공우주국 소속 우�
 # text = "근우회는 1927년에 조직된 한국의 여성 단체이다."
 # text = "쿠바에서 몇년간 생활을 했고, 말년에는 피델 카스트로와도 알고 지내는 사이였기 때문에 관광업의 비중이 높아진 뒤의 쿠바에서는 허밍웨이를 체 게바라와 함께 관광상품으로 써먹고 있다."
 
-get_full_text_graph(text, False, False)
+get_full_text_graph(text, True, False)

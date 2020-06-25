@@ -7,7 +7,8 @@ def call_frame(text):
       targetURL = "http://143.248.135.188:1107/frameBERT"
       headers = {'Content-Type': 'application/json; charset=utf-8'}
       requestJson = {
-            "text": text
+          "text": text,
+          "result_format": "textae"
       }
       response = requests.post(targetURL, data=json.dumps(requestJson), headers=headers)
       print("[FRAME responseCode] " + str(response.status_code))

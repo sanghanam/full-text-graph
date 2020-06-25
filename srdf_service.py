@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 import jpype
-from src import processor as p
+import processor as p
 from nltk.tree import Tree
 # from src import full_text_graph_generator as fg
 

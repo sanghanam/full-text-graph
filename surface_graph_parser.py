@@ -1,6 +1,3 @@
-from src import chunking as c
-import sys
-
 def get_lists(chunks):
     subject_list = []
     object_list = []

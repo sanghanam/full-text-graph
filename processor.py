@@ -1,8 +1,9 @@
 import csv
 import re
-from src import surface_graph_parser as sp
-from src import chunking as c
-from src import wikilink_parser as wp
+import surface_graph_parser as sp
+import chunking as c
+import wikilink_parser as wp
+
 
 def clean_text(text):
     cleaned = re.sub(r'\([^(^)]*\(*[^(^)]*\)*[^(^)]*\)', '', text).replace(' [', '').replace('] ', '').replace('_', ' ')
